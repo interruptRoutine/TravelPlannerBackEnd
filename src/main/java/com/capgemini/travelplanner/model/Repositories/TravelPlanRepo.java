@@ -1,7 +1,6 @@
 package com.capgemini.travelplanner.model.Repositories;
 
 import com.capgemini.travelplanner.model.entities.TravelPlan;
-import com.capgemini.travelplanner.model.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +12,9 @@ public interface TravelPlanRepo extends JpaRepository<TravelPlan, UUID> {
     @Override
     Optional<TravelPlan> findById(UUID id);
 
-    TravelPlan findByUser(User user);
+    Optional<TravelPlan> findByTravelNameAndUserEmail(String travelName, String email);
+
+    void deleteByTravelNameAndUserEmail(String travelName, String email);
+
+    void deleteAllByUserEmail(String email);
 }

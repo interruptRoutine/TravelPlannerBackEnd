@@ -1,28 +1,49 @@
 package com.capgemini.travelplanner.model.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.capgemini.travelplanner.model.dtos.PlanDto;
+import com.capgemini.travelplanner.model.services.TravelPlanService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/travels")
 public class TravelController {
+    private final TravelPlanService travelPlanService;
     @Value("${geoapify.api_key}")
     private String geoapifyApiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    public TravelController(TravelPlanService travelPlanService) {
+        this.travelPlanService = travelPlanService;
+    }
+
     @GetMapping("/")
     public String home() {
         return "Ao io sto a funziona";
     }
+
+    @GetMapping("/city")
+    public String getCity(Authentication authentication, @RequestParam("city") String city){
+        String url = UriComponentsBuilder.newInstance()
+                .scheme("https")
+                .host("api.geoapify.com")
+                .path("/v1/geocode/search")
+                .queryParam("text", city)
+                .queryParam("format", "json")
+                .queryParam("apiKey", geoapifyApiKey)
+                .build()
+                .toUriString();
+
+        travelPlanService.saveSearchHistory(authentication, city);
+
+        return restTemplate.getForObject(url, String.class);
+    }
+
 
     @GetMapping("/coordinates")
     public String getCoordinates(@RequestParam("city") String city) {
@@ -52,7 +73,6 @@ public class TravelController {
         } catch (Exception e) {
             return "Errore nell'elaborazione della risposta: " + e.getMessage();
         }
-        //https://api.geoapify.com/v1/routing?waypoints=42.0517987,12.6183967|41.85949955,12.58611768937552&mode=drive&lang=it&apiKey=YOUR_API_KEY
     }
 
     @GetMapping("/travelplan")
@@ -71,6 +91,16 @@ public class TravelController {
                 .toUriString();
 
         return restTemplate.getForObject(url, String.class);
+    }
+
+    @PostMapping("/travelplan")
+    public ResponseEntity<String> setTravelPlan(Authentication authentication, @RequestBody PlanDto planDto) {
+        try {
+            travelPlanService.saveTravelPlan(authentication, planDto);
+            return ResponseEntity.ok("Travel plan salvato");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Errore nel salvataggio: " + e.getMessage());
+        }
     }
 
 }

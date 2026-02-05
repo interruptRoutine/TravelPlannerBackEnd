@@ -166,6 +166,48 @@ Questa documentazione descrive tutti gli endpoint REST disponibili nell'applicaz
 
 ---
 
+### 3. TravelController
+
+**Base Path:** `/api/travels`
+
+| Metodo | Endpoint | Descrizione | Autenticazione |
+|--------|----------|-------------|----------------|
+| GET | `/coordinates` | Restituisce le coordinate (latitudine, longitudine) di una città | No |
+| GET | `/travelplan` | Restituisce la rotta tra due città (esempio) | No |
+
+#### GET /api/travels/coordinates
+
+**Descrizione:** Restituisce le coordinate (latitudine, longitudine) della città inserita come parametro.
+
+**Parametri Query:**
+- `city` (String) — Nome della città da cercare
+
+**Risposta Successo (200 OK):**
+```
+"41.9028,12.4964"
+```
+
+**Errori Possibili:**
+- "Coordinate non trovate"
+- "Errore nell'elaborazione della risposta: ..."
+
+#### GET /api/travels/travelplan
+
+**Descrizione:** Restituisce la rotta tra due città (esempio, endpoint da completare secondo le specifiche).
+
+**Parametri Query:**
+- `start` (String) — Città di partenza
+- `end` (String) — Città di arrivo
+
+**Risposta Successo (200 OK):**
+```
+{
+    "route": "dettagli della rotta..."
+}
+```
+
+---
+
 ## DTOs (Data Transfer Objects)
 
 ### UserRegisterDto

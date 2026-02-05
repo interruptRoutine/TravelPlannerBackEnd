@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class UserModifyDto {
-    private String email, name, password /*TODO*/, location;
+    private String email, name, password, location;
     private LocalDate dateOfBirth;
     private TemperatureUnit temperatureUnit;
     private DistanceUnit distanceUnit;

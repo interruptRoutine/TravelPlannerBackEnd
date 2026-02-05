@@ -98,8 +98,24 @@ public class UserService implements UserDetailsService {
         userRepo.deleteByEmail(email);
     }
 
+    public void deleteUserByEmail(String email) {
+        if (!userRepo.existsByEmail(email)) {
+            throw new InvalidCredentialsException("Utente non trovato.");
+        }
+        userRepo.deleteByEmail(email);
+    }
+
     public User modifyUser(String token, UserModifyDto userDto) {
         User user = userRepo.findByToken(token).orElseThrow(() -> new InvalidCredentialsException("Token non valido."));
+        return modifyUserInternal(user, userDto);
+    }
+
+    public User modifyUserByEmail(String email, UserModifyDto userDto) {
+        User user = userRepo.findByEmail(email).orElseThrow(() -> new InvalidCredentialsException("Utente non trovato."));
+        return modifyUserInternal(user, userDto);
+    }
+
+    private User modifyUserInternal(User user, UserModifyDto userDto) {
 
         if (userDto.getEmail() != null && !userDto.getEmail().isBlank() && !userDto.getEmail().equals(user.getEmail())) {
             user.setEmail(userDto.getEmail());
@@ -126,5 +142,8 @@ public class UserService implements UserDetailsService {
         return userRepo.save(user);
     }
 
-
+    public User getUserByEmail(String email) {
+        return userRepo.findByEmail(email)
+                .orElseThrow(() -> new InvalidCredentialsException("Utente non trovato."));
+    }
 }

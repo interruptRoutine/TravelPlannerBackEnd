@@ -6,8 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -18,13 +20,15 @@ import java.util.UUID;
 public class TravelPlan {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id_plan;
+    private UUID idPlan;
     @NotNull
-    private String travelName, destination;
-    private String description;
-    private LocalDate startDate = LocalDate.now().plusDays(1), endDate = LocalDate.now().plusDays(7);
+    @UniqueElements
+    private String travelName;
+    private String startCity, endCity;
+    private LocalDate startDate;
+    private LocalDateTime creationTime;
     @ManyToOne(fetch = FetchType.LAZY)
+
     @JoinColumn(name = "email")
     private User user;
-
 }

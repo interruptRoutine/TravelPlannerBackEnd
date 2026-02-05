@@ -3,12 +3,10 @@ package com.capgemini.travelplanner.model.entities;
 import com.capgemini.travelplanner.model.enums.DistanceUnit;
 import com.capgemini.travelplanner.model.enums.Roles;
 import com.capgemini.travelplanner.model.enums.TemperatureUnit;
-import com.capgemini.travelplanner.model.exceptions.InvalidCredentialsException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,7 +41,9 @@ public class User {
     private String token;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<TravelPlan> travelPlan = new HashSet<>();
+    private Set<TravelPlan> travelPlanSaved = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<SearchHistory> searchHistory = new HashSet<>();
 
     //ENUMS
     private Roles role;

@@ -20,6 +20,17 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/userinfo")
+    public ResponseEntity<?> getUserInfo(Authentication authentication) {
+        // Restituisce le informazioni dell'utente autenticato
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("Utente non autenticato. Effettua il login.");
+        }
+        String email = (String) authentication.getPrincipal();
+        User user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(user);
+    }
+
     /**
      * Registra un nuovo utente
      * @param userDto
@@ -37,8 +48,6 @@ public class UserController {
      */
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> loginUser(@RequestBody UserLoginDto userDto, HttpServletResponse response) {
-        String loggedInToken = null;
-
         String tokenUtente = userService.loginUser(userDto);
 
         Cookie cookie = new Cookie("token", tokenUtente);
@@ -51,24 +60,26 @@ public class UserController {
 
     /**
      * Elimina l'utente autenticato
-     * @param authentication
-     * @return Token Utente
+     * @param authentication Oggetto di autenticazione Spring Security
+     * @return Risposta vuota con status 200
      */
     @DeleteMapping("/delete")
     public ResponseEntity<Void> deleteUser(Authentication authentication) {
-        userService.deleteUser(authentication.getName());
+        String email = (String) authentication.getPrincipal();
+        userService.deleteUserByEmail(email);
         return ResponseEntity.ok().build();
     }
 
 
     /**
      * Modifica i dati dell'utente autenticato
-     * @param authentication
-     * @param userDto
+     * @param authentication Oggetto di autenticazione Spring Security
+     * @param userDto DTO con i dati da modificare
      * @return Restituisce User Modificato
      */
     @PutMapping("/modify")
     public ResponseEntity<User> modifyUser(Authentication authentication, @RequestBody UserModifyDto userDto) {
-        return ResponseEntity.ok(userService.modifyUser(authentication.getName(), userDto));
+        String email = (String) authentication.getPrincipal();
+        return ResponseEntity.ok(userService.modifyUserByEmail(email, userDto));
     }
 }
