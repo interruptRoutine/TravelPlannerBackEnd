@@ -46,9 +46,9 @@ public class UserController {
         cookie.setPath("/");
         response.addCookie(cookie);
 
-
         return ResponseEntity.ok(Map.of("token", tokenUtente));
     }
+
     /**
      * Elimina l'utente autenticato
      * @param authentication
@@ -60,6 +60,13 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+
+    /**
+     * Modifica i dati dell'utente autenticato
+     * @param authentication
+     * @param userDto
+     * @return Restituisce User Modificato
+     */
     @PutMapping("/modify")
     public ResponseEntity<User> modifyUser(Authentication authentication, @RequestBody UserModifyDto userDto) {
         return ResponseEntity.ok(userService.modifyUser(authentication.getName(), userDto));
